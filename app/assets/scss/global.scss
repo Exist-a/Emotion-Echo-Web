@@ -1,0 +1,185 @@
+// ==========================
+// 1. 基础重置样式（消除浏览器默认差异）
+// ==========================
+* {
+  margin: 0;
+  padding: 0;
+  box-sizing: border-box;
+  -webkit-tap-highlight-color: transparent; // 移除移动端点击高亮
+}
+
+html,
+body {
+  height: 100%;
+  font-family: -apple-system, BlinkMacSystemFont, "PingFang SC",
+    "Microsoft YaHei", sans-serif;
+  font-size: 16px;
+  font-weight: 400;
+  color: #1e293b;
+  background-color: #f3f4f6;
+  overflow-x: hidden;
+  // 移动端安全区域适配
+  padding-top: env(safe-area-inset-top);
+  padding-bottom: env(safe-area-inset-bottom);
+  // 禁止文本缩放
+  -webkit-text-size-adjust: 100%;
+  text-size-adjust: 100%;
+}
+
+// 图片自适应
+img {
+  max-width: 100%;
+  height: auto;
+  vertical-align: middle;
+}
+
+// 列表重置
+ul,
+ol {
+  list-style: none;
+}
+
+// 链接重置
+a {
+  text-decoration: none;
+  color: inherit;
+  touch-action: manipulation; // 消除移动端300ms点击延迟
+  &:hover {
+    color: #3b82f6;
+    transition: color 200ms ease;
+  }
+}
+
+// 表单元素重置
+button,
+textarea,
+select {
+  font-family: inherit;
+  font-size: inherit;
+  border: none;
+  outline: none;
+  background: transparent;
+  -webkit-appearance: none; // 移除iOS默认样式
+  appearance: none;
+}
+
+button {
+  cursor: pointer;
+  &:disabled {
+    cursor: not-allowed;
+    opacity: 0.6;
+    pointer-events: none;
+  }
+}
+
+/* assets/css/fonts.css */
+@font-face {
+  font-family: "maskTitle"; /* 字体名称，后续使用时引用 */
+  src: url("/fonts/LuoGuoChengMaoBiXiaoXingJianTi-2.ttf") format("truetype");
+  font-weight: 400; /* 常规字重 */
+  font-style: normal;
+  // font-display: swap; /* 优化字体加载体验：先显示系统字体，待自定义字体加载完成后替换 */
+}
+
+
+// ==========================
+// 5. 移动端适配
+// ==========================
+@media (max-width: 768px) {
+  // 移动端字体适配
+  body {
+    font-size: 14px;
+  }
+
+  // 容器适配
+  .container {
+    padding: 0 8px;
+  }
+
+  // 按钮适配
+  .btn {
+    height: 44px;
+    min-width: 70px;
+    font-size: 14px;
+  }
+
+  // 输入框适配
+  .input {
+    height: 44px;
+    font-size: 14px;
+  }
+
+  // 固定布局适配
+  .fixed-header,
+  .fixed-footer {
+    padding-left: 8px;
+    padding-right: 8px;
+  }
+
+  // 移动端独占显示
+  .mobile-only {
+    display: block;
+  }
+
+  // PC端隐藏
+  .pc-only {
+    display: none;
+  }
+}
+
+// PC端适配
+@media (min-width: 769px) {
+  .mobile-only {
+    display: none;
+  }
+
+  .pc-only {
+    display: block;
+  }
+}
+
+// ==========================
+// 6. 动画样式
+// ==========================
+// 淡入淡出
+.fade-in {
+  animation: fadeIn 300ms ease-in-out;
+}
+
+.fade-out {
+  animation: fadeOut 300ms ease-in-out;
+}
+
+@keyframes fadeIn {
+  from {
+    opacity: 0;
+  }
+  to {
+    opacity: 1;
+  }
+}
+
+@keyframes fadeOut {
+  from {
+    opacity: 1;
+  }
+  to {
+    opacity: 0;
+  }
+}
+
+// 滑动进入（从下往上）
+.slide-up {
+  animation: slideUp 300ms ease-in-out;
+}
+
+@keyframes slideUp {
+  from {
+    transform: translateY(20px);
+    opacity: 0;
+  }
+  to {
+    transform: translateY(0);
+    opacity: 1;
+  }
+}

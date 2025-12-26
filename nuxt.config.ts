@@ -19,7 +19,7 @@ export default defineNuxtConfig({
     },
   },
   compatibilityDate: "2025-07-15",
-  modules: ["@element-plus/nuxt"], // 仅保留 Element Plus 的 Nuxt 模块
+  modules: ["@element-plus/nuxt",'@pinia/nuxt'], 
   devtools: { enabled: true },
   css: [
     "~/assets/scss/global.scss", // 全局 SCSS 文件

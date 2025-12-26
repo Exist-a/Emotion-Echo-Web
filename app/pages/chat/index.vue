@@ -1,6 +1,12 @@
 <template>
-  <NuxtLayout></NuxtLayout>
+  <NuxtPage></NuxtPage>
+  <!-- chat -->
 </template>
-<script lang="ts">
 
+<script setup lang="ts">
+definePageMeta({
+  layout: "nav",
+});
 </script>
+
+<style scoped lang="scss"></style>

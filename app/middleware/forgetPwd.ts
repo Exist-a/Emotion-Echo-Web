@@ -21,10 +21,8 @@ export default defineNuxtRouteMiddleware(
     const currentPath = to.path.replace(/\/$/, "");
 
     const requiredStep = stepRouteMap[currentPath as keyof typeof stepRouteMap];
-    console.log("【中间件调试】currentPath:", currentPath);
-    console.log("【中间件调试】requiredStep:", requiredStep);
+
     const { currentStep } = useForgetPwdState();
-    console.log("【中间件调试】currentStep.value:", currentStep.value);
 
     // 3. 核心校验：步骤不足则跳回确认账号页（或你指定的初始页）
     if (currentStep.value < requiredStep) {

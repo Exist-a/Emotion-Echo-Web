@@ -9,7 +9,12 @@
       <p class="mask-desc">
         {{ isLogin ? "还没有账号？去注册" : "已经有账号了？去登陆" }}
       </p>
-      <el-button class="mask-btn" :circle="true" @click="switchMask">
+      <el-button
+        class="mask-btn"
+        :circle="true"
+        @click="switchMask"
+        :disabled="isDisable"
+      >
         <el-icon size="30px"><Switch /></el-icon>
       </el-button>
     </div>
@@ -22,9 +27,7 @@
     >
       <h1 class="register-title">注册</h1>
 
-      <!-- 【修改1：label从“账号”改为“手机号/邮箱”】 -->
       <el-form-item label="账号" label-position="top" prop="username">
-        <!-- 【修改2：placeholder从“请输入注册账号”改为“请输入手机号/邮箱”】 -->
         <el-input
           v-model="registerInfo.username"
           class="register-input"
@@ -199,7 +202,7 @@ const registerRules = ref({
   //   { validator: validateConfirmPassword, trigger: "blur" },
   // ],
 });
-
+const isDisable = ref(false);
 const isRemember = ref<boolean>(false);
 const isLogin = ref<boolean>(true);
 const mask = ref<HTMLDivElement>();
@@ -229,6 +232,11 @@ const switchMask = () => {
     mask.value.classList.remove("mask-register", "mask-login");
     mask.value?.classList.add(!isLogin.value ? "mask-register" : "mask-login");
   }
+  isDisable.value = true;
+  let timer = setTimeout(() => {
+    isDisable.value = false;
+    clearTimeout(timer);
+  }, 2000);
 };
 
 const loginHandler = () => {

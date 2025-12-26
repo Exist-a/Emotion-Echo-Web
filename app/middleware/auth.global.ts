@@ -20,7 +20,6 @@ export default defineNuxtRouteMiddleware((to, from) => {
   //   // 使用 navigateTo 而非 Vue Router 的 next()，Nuxt 推荐且支持 SSR
   //   return navigateTo("/login", {
   //     replace: true, // 替换历史记录，避免用户回退时重复触发重定向
-  //     redirectCode: 302, // HTTP 重定向状态码（可选，默认 302）
   //   });
   // }
 

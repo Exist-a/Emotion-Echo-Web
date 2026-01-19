@@ -1,0 +1,1 @@
+import{ai as f,r as t}from"./B91_JGNm.js";const l=f("user",()=>{const n=t("默认昵称"),a=t("/imgs/OIP-C.webp"),o=t(18),i=t(100000001),c=()=>n,r=()=>a,g=()=>i,u=()=>o,s=t({fontSize:"16px"});return{getNickname:c,getAvatarPath:r,getId:g,getAge:u,editNickname:e=>{n.value=e},editAge:e=>{o.value=e},getUserConfig:()=>s.value,setFontSize:e=>{s.value.fontSize=e}}});export{l as u};

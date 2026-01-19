@@ -1,0 +1,1 @@
+import{u}from"./Dv1JYxKo.js";const c=()=>{const t=u("forgetPwdStep",()=>0),e=u("forgetPwdAccount",()=>"");return{currentStep:t,userAccount:e,updateStep:o=>{t.value=o},resetState:()=>{t.value=0,e.value=""}}};export{c as u};

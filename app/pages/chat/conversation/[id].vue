@@ -1,23 +1,27 @@
 <template>
-  <main class="main">
-    <div
-      class="dialog"
-      :class="item.sender === 'user' ? 'dialog-user' : 'dialog-AI'"
-      v-for="item in data"
-    >
-      <span
-        class="content"
-        :class="item.sender === 'user' ? 'content-user' : 'content-AI'"
-        >{{ item.content }}</span
+  <div style="height: 100%">
+    <main class="main">
+      <div
+        class="dialog"
+        :class="item.sender === 'user' ? 'dialog-user' : 'dialog-AI'"
+        v-for="item in data"
       >
-    </div>
-  </main>
-  <conversationInput class="input"></conversationInput>
+        <span
+          class="content"
+          :class="item.sender === 'user' ? 'content-user' : 'content-AI'"
+          :style="{ fontSize: userConfig.fontSize }"
+          >{{ item.content }}</span
+        >
+      </div>
+    </main>
+    <conversationInput class="input"></conversationInput>
+  </div>
 </template>
 
 <script setup lang="ts">
 import type { conversationMessagesType } from "~/types/conversation/conversationMessagesType";
-
+const userStore = useUserStore();
+const userConfig = ref(userStore.getUserConfig());
 const conversationStore = useConversationStore();
 const route = useRoute();
 const data = ref<conversationMessagesType>([]);

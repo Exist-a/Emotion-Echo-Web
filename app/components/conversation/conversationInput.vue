@@ -1,6 +1,6 @@
 <template>
   <div class="conversationInput-container">
-    <textarea name="" id="" class="conversation-textarea" rows="7" v-model="message"></textarea>
+    <textarea name="" id="" class="conversation-textarea" rows="7" v-model="message" :style="{ fontSize: userConfig.fontSize }"></textarea>
     <div class="actions">
       <div class="left">
         <el-button :icon="Paperclip" circle/>
@@ -20,6 +20,8 @@
 
 <script setup lang="ts">
 import { Promotion, Microphone, Paperclip } from "@element-plus/icons-vue";
+const userStore = useUserStore();
+const userConfig = ref(userStore.getUserConfig());
 const message = ref('')
 const route = useRoute()
 const sendMessage = ()=>{

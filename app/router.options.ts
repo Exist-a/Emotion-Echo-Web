@@ -1,5 +1,6 @@
 // app/router.options.ts
 import type { RouterConfig } from "@nuxt/schema";
+import component from "element-plus/es/components/tree-select/src/tree-select-option.mjs";
 
 export default {
   // 自定义路由表（覆盖 Nuxt 自动生成的路由）
@@ -10,7 +11,17 @@ export default {
       path: "/",
       redirect: { name: "chat" }, // 直接重定向到聊天页
     },
-
+    // 问题页
+    {
+      name: "question",
+      path: "/question",
+      component: () => import("~/pages/question/index.vue"),
+    },
+    {
+      name: "question-detail",
+      path: "/question/:id",
+      component: () => import("~/pages/question/[id].vue"),
+    },
     // 聊天页（需要登录校验）
     {
       name: "chat",
@@ -21,6 +32,8 @@ export default {
         {
           name: "chat-conversation",
           path: "conversation",
+          redirect: "/chat/conversation/new",
+
           component: () => import("~/pages/chat/conversation/index.vue"),
           children: [
             {
@@ -41,7 +54,7 @@ export default {
         {
           name: "chat-user",
           path: "user",
-          component: () => import("~/pages/chat/user.vue"),
+          component: () => import("~/pages/chat/user/index.vue"),
         },
         {
           name: "chat-setting",
@@ -51,6 +64,7 @@ export default {
         {
           name: "chat-dashboard",
           path: "dashboard",
+          redirect:'/chat/dashboard/dailyReport',
           component: () => import("~/pages/chat/dashboard/index.vue"),
 
           children: [

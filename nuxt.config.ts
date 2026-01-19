@@ -19,12 +19,12 @@ export default defineNuxtConfig({
     },
   },
   compatibilityDate: "2025-07-15",
-  modules: ["@element-plus/nuxt",'@pinia/nuxt'], 
+  modules: ["@element-plus/nuxt", "@pinia/nuxt", "nuxt-echarts"],
   devtools: { enabled: true },
-  css: [
-    "~/assets/scss/global.scss", // 全局 SCSS 文件
-  ],
-
+  css: ["~/assets/scss/global.scss"],
+  elementPlus: {
+    defaultLocale: "zh-cn",
+  },
   routeRules: {
     "/": { redirect: { to: "/chat", statusCode: 301 } },
   },
@@ -32,9 +32,20 @@ export default defineNuxtConfig({
     css: {
       preprocessorOptions: {
         scss: {
-          additionalData: `@use "~/assets/scss/variables.scss" as *;`, // 全局变量文件
+          additionalData: `@use "~/assets/scss/variables.scss" as *;`,
         },
       },
     },
+  },
+  echarts: {
+    renderer: ["canvas", "svg"],
+    charts: ["BarChart", "LineChart", "PieChart"],
+    components: [
+      "DatasetComponent",
+      "GridComponent",
+      "TooltipComponent",
+      "LegendComponent",
+      "TitleComponent",
+    ],
   },
 });

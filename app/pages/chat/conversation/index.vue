@@ -12,7 +12,6 @@ const route = useRoute();
 const isNewConversation = computed(() => {
   return route.params.id === undefined;
 });
-console.log(isNewConversation.value);
 const startNewConversation = () => {
   if (isNewConversation.value) {
     return;

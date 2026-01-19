@@ -1,6 +1,6 @@
 <template>
   <div class="nav-container">
-    <el-menu default-active="1" class="menu">
+    <el-menu :default-active="activeIndex" class="menu">
       <NuxtLink to="/chat/conversation">
         <el-menu-item index="1" class="menu-item">
           <el-icon><ChatLineSquare /></el-icon>
@@ -40,7 +40,7 @@
         </el-menu-item>
       </NuxtLink>
     </el-menu>
-    <main style="padding: 20px; flex: 1;"><slot /></main>
+    <main class="main"><slot /></main>
   </div>
 </template>
 
@@ -51,14 +51,41 @@ import {
   Setting,
   User,
 } from "@element-plus/icons-vue";
+const route = useRoute();
+const activeIndex = computed(() => {
+  const currentPath = route.path; // 当前路由路径
+  // 匹配规则：按路由路径映射到菜单index
+  if (currentPath.startsWith("/chat/conversation")) {
+    return "1"; // 聊天（包括其子路由）
+  } else if (currentPath === "/chat/dashboard/dailyReport") {
+    return "1-1"; // 日度分析
+  } else if (currentPath === "/chat/dashboard/weeklyReport") {
+    return "1-2"; // 周度分析
+  } else if (currentPath === "/chat/dashboard/monthlyReport") {
+    return "1-3"; // 月度分析
+  } else if (currentPath === "/chat/dashboard/annualReport") {
+    return "1-4"; // 年度分析
+  } else if (currentPath === "/chat/user") {
+    return "3"; // 我的
+  } else if (currentPath === "/chat/setting") {
+    return "4"; // 设置
+  }
+  return "1"; // 默认激活聊天
+});
 </script>
 
 <style scoped lang="scss">
 .nav-container {
   display: flex;
-
+  overflow: hidden;
   .menu {
     padding: 5px;
+    height: 100vh;
+  }
+  .main {
+    padding: 20px;
+    flex: 1;
+    overflow-y: auto;
     height: 100vh;
   }
 }

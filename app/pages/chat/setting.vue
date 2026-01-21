@@ -2,7 +2,7 @@
   <div class="setting-container">
     <div class="setting-item font-size-edit">
       <span :style="{ fontSize: userConfig.fontSize }" class="content"
-        >这里是测试字体</span
+        >测试字体</span
       >
       <div style="align-items: center;">
         <span class="setting-title">选择字体大小</span>
@@ -54,7 +54,7 @@ const handleFontSizeChange = (fontSize: fontSizeType) => {
 .setting-container {
   background-color: #fff;
   border-radius: 12px;
-  padding: 24px;
+  padding: 20px;
   box-shadow: 0 2px 12px rgba(0, 0, 0, 0.08);
   width: 100%;
   box-sizing: border-box;
@@ -64,7 +64,7 @@ const handleFontSizeChange = (fontSize: fontSizeType) => {
     align-items: center;
     background-color: #f5f7fa;
     border-radius: 12px;
-    padding: 16px 20px;
+    padding: 10px;
     margin-bottom: 16px;
     transition: background-color 0.2s ease;
 
@@ -99,7 +99,7 @@ const handleFontSizeChange = (fontSize: fontSizeType) => {
       border-radius: 12px;
       display: inline-block;
       margin: 0; // 去掉默认margin，用父级gap控制
-      padding: 10px 16px; // 优化内边距，更舒适
+      padding: 10px 12px; // 优化内边距，更舒适
       line-height: 1.6; // 优化行高，提升可读性
       max-width: 60%; // 调整宽度，避免占比过大
       word-wrap: break-word;

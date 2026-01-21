@@ -1,6 +1,5 @@
 // app/router.options.ts
 import type { RouterConfig } from "@nuxt/schema";
-import component from "element-plus/es/components/tree-select/src/tree-select-option.mjs";
 
 export default {
   // 自定义路由表（覆盖 Nuxt 自动生成的路由）

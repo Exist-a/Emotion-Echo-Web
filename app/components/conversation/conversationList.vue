@@ -1,5 +1,5 @@
 <template>
-  <div class="header-fold">
+  <div class="header-fold" :class="$device.isMobile?'header-fold-mobile':''">
     <h3>情绪回音</h3>
     <el-button :icon="Memo" @click="foldAndUnfoldMenu" size="small"></el-button>
   </div>
@@ -12,8 +12,11 @@
       <h3>情绪回音</h3>
       <el-button :icon="Memo" @click="foldAndUnfoldMenu"></el-button>
     </div>
-    <el-button type="primary" class="new-conversation-btn" :icon="ChatSquare"
-    @click="startNewConversation"
+    <el-button
+      type="primary"
+      class="new-conversation-btn"
+      :icon="ChatSquare"
+      @click="startNewConversation"
       >新对话</el-button
     >
     <el-divider border-style="dashed" />
@@ -44,13 +47,11 @@ import type {
   conversationListLabelType,
 } from "~/types/conversation/conversationListType";
 const conversationStore = useConversationStore();
-const activeId = ref(0);
 // 定义响应式变量控制折叠状态
 const isMenuFolded = ref(false);
-const historyList = ref<conversationListItemDataType[] | null>(null);
 const labelHistoryList = ref<conversationListItemType[] | null>(null);
 const isListLoading = ref<boolean>(true);
-  const emit = defineEmits(['startNewConversation'])
+const emit = defineEmits(["startNewConversation"]);
 onMounted(() => {
   //从store获取数据
   labelHistoryList.value = conversationStore.getLabelHistoryList();
@@ -63,18 +64,22 @@ const foldAndUnfoldMenu = () => {
   isMenuFolded.value = !isMenuFolded.value;
 };
 
-
-const handleUpdateTitle = (newTitle: string, id: number, label: conversationListLabelType)=> {
-  conversationStore.handleEditTitle( newTitle,label, id);
-
+const handleUpdateTitle = (
+  newTitle: string,
+  id: number,
+  label: conversationListLabelType,
+) => {
+  conversationStore.handleEditTitle(newTitle, label, id);
 };
-const handleDelConversation = (id:number,label:conversationListLabelType)=>{
-  conversationStore.handleDelConversation(id,label)
-}
-const startNewConversation = ()=>{
-  emit('startNewConversation')
-}
-
+const handleDelConversation = (
+  id: number,
+  label: conversationListLabelType,
+) => {
+  conversationStore.handleDelConversation(id, label);
+};
+const startNewConversation = () => {
+  emit("startNewConversation");
+};
 </script>
 
 <style scoped lang="scss">
@@ -94,6 +99,10 @@ const startNewConversation = ()=>{
   color: $font-color-light;
   font-size: 12px;
 }
+.header-fold-mobile {
+  top: 89px;
+  left: 30px;
+}
 .list-container {
   z-index: 2;
   transition: all 0.5s ease-in-out; /* 可调整过渡时长，更丝滑 */
@@ -104,7 +113,7 @@ const startNewConversation = ()=>{
   box-shadow: $box-shadow;
   overflow: hidden; /* 关键：宽度为0时隐藏内部元素，且无法交互 */
   flex-shrink: 0; /* 防止被父元素挤压宽度 */
-
+  min-width: 180px;
   .header {
     align-items: center;
     display: flex;
@@ -127,5 +136,6 @@ const startNewConversation = ()=>{
 .list-container-fold {
   width: 0;
   padding: 20px 0;
+  min-width: 0;
 }
 </style>

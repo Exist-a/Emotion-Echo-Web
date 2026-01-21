@@ -1,6 +1,11 @@
 <template>
-  <div class="login-container">
-    <div class="mask" ref="mask">
+  <!-- 外层容器：根据设备切换布局逻辑 -->
+  <div
+    class="login-container"
+    :class="{ 'mobile-container': $device.isMobile }"
+  >
+    <!-- PC端mask（移动端隐藏） -->
+    <div class="mask pc-mask" ref="mask" v-if="!$device.isMobile">
       <h2 class="mask-title">
         <template v-for="(line, index) in splitPoem" :key="index">
           <p class="poem-line">{{ line }}</p>
@@ -19,14 +24,39 @@
       </el-button>
     </div>
 
+    <!-- 移动端顶部提示区（PC端隐藏） -->
+    <div class="mobile-mask" v-if="$device.isMobile">
+      <h2 class="mobile-mask-title">
+        <template v-for="(line, index) in splitPoem" :key="index">
+          <p class="mobile-poem-line">{{ line }}</p>
+        </template>
+      </h2>
+      <p class="mobile-mask-desc">
+        {{
+          isLogin
+            ? "还没有账号？点击下方按钮注册"
+            : "已经有账号了？点击下方按钮登陆"
+        }}
+      </p>
+      <el-button
+        class="mobile-mask-btn"
+        type="primary"
+        @click="switchMobileForm"
+        size="small"
+      >
+        {{ isLogin ? "去注册" : "去登陆" }}
+      </el-button>
+    </div>
+
+    <!-- PC端注册表单（绝对定位） -->
     <el-form
-      class="register"
+      class="register pc-form"
       ref="registerFormRef"
       :model="registerInfo"
       :rules="registerRules"
+      v-if="!$device.isMobile"
     >
       <h1 class="register-title">注册</h1>
-
       <el-form-item label="账号" label-position="top" prop="username">
         <el-input
           v-model="registerInfo.username"
@@ -34,7 +64,6 @@
           placeholder="请输入手机号/邮箱"
         />
       </el-form-item>
-
       <el-form-item label="密码" label-position="top" prop="password">
         <el-input
           v-model="registerInfo.password"
@@ -44,7 +73,6 @@
           placeholder="请输入密码"
         />
       </el-form-item>
-
       <el-form-item label="验证码" label-position="top">
         <el-input
           v-model="registerInfo.verificationCode"
@@ -67,7 +95,6 @@
           </template>
         </el-input>
       </el-form-item>
-
       <el-form-item>
         <el-button type="primary" class="register-btn" @click="registerHandler">
           注册
@@ -75,23 +102,22 @@
       </el-form-item>
     </el-form>
 
+    <!-- PC端登录表单（绝对定位） -->
     <el-form
-      class="login"
+      class="login pc-form"
       ref="loginFormRef"
       :model="loginInfo"
       :rules="loginRules"
+      v-if="!$device.isMobile"
     >
       <h1 class="login-title">登陆</h1>
-
       <el-form-item label="账号" label-position="top" prop="username">
-        <!-- 【修改4：placeholder从“请输入登录账号”改为“请输入手机号/邮箱”】 -->
         <el-input
           v-model="loginInfo.username"
           class="login-input"
           placeholder="请输入手机号/邮箱"
         />
       </el-form-item>
-
       <el-form-item label="密码" label-position="top" prop="password">
         <el-input
           v-model="loginInfo.password"
@@ -101,23 +127,122 @@
           placeholder="请输入密码"
         />
       </el-form-item>
-
       <div class="login-text">
         <el-checkbox label="记住我" v-model="isRemember" />
         <NuxtLink to="/login/forget/verify">忘记密码</NuxtLink>
       </div>
-
       <el-form-item>
         <el-button type="primary" class="login-btn" @click="loginHandler">
           登陆
         </el-button>
       </el-form-item>
-
       <div class="other-way">
         <img src="/assets/icons/微信.svg" alt="" @click="wechatLogin" />
         <img src="/assets/icons/腾讯QQ.svg" alt="" @click="QQLogin" />
       </div>
     </el-form>
+
+    <!-- 移动端表单区（PC端隐藏） -->
+    <div class="mobile-form-wrap" v-if="$device.isMobile">
+      <!-- 移动端注册表单 -->
+      <el-form
+        class="register mobile-form"
+        ref="registerFormRef"
+        :model="registerInfo"
+        :rules="registerRules"
+        v-show="!isLogin"
+      >
+        <h1 class="register-title">注册</h1>
+        <el-form-item label="账号" label-position="top" prop="username">
+          <el-input
+            v-model="registerInfo.username"
+            class="register-input"
+            placeholder="请输入手机号/邮箱"
+          />
+        </el-form-item>
+        <el-form-item label="密码" label-position="top" prop="password">
+          <el-input
+            v-model="registerInfo.password"
+            type="password"
+            :show-password="true"
+            class="register-input"
+            placeholder="请输入密码"
+          />
+        </el-form-item>
+        <el-form-item label="验证码" label-position="top">
+          <el-input
+            v-model="registerInfo.verificationCode"
+            :show-password="true"
+            class="register-input"
+            placeholder="请输入验证码"
+          >
+            <template #append>
+              <el-button
+                @click="getVerificationCode"
+                ref="verificationCodeRef"
+                :disabled="isGetVerificationCode"
+                type="primary"
+                size="small"
+                >{{
+                  isGetVerificationCode
+                    ? lastSeconds + verificationCodeText
+                    : "获取验证码"
+                }}</el-button
+              >
+            </template>
+          </el-input>
+        </el-form-item>
+        <el-form-item>
+          <el-button
+            type="primary"
+            class="register-btn"
+            @click="registerHandler"
+          >
+            注册
+          </el-button>
+        </el-form-item>
+      </el-form>
+
+      <!-- 移动端登录表单 -->
+      <el-form
+        class="login mobile-form"
+        ref="loginFormRef"
+        :model="loginInfo"
+        :rules="loginRules"
+        v-show="isLogin"
+      >
+        <h1 class="login-title">登陆</h1>
+        <el-form-item label="账号" label-position="top" prop="username">
+          <el-input
+            v-model="loginInfo.username"
+            class="login-input"
+            placeholder="请输入手机号/邮箱"
+          />
+        </el-form-item>
+        <el-form-item label="密码" label-position="top" prop="password">
+          <el-input
+            v-model="loginInfo.password"
+            type="password"
+            :show-password="true"
+            class="login-input"
+            placeholder="请输入密码"
+          />
+        </el-form-item>
+        <div class="login-text">
+          <el-checkbox label="记住我" v-model="isRemember" size="small" />
+          <NuxtLink to="/login/forget/verify">忘记密码</NuxtLink>
+        </div>
+        <el-form-item>
+          <el-button type="primary" class="login-btn" @click="loginHandler">
+            登陆
+          </el-button>
+        </el-form-item>
+        <div class="other-way">
+          <img src="/assets/icons/微信.svg" alt="" @click="wechatLogin" />
+          <img src="/assets/icons/腾讯QQ.svg" alt="" @click="QQLogin" />
+        </div>
+      </el-form>
+    </div>
   </div>
 </template>
 
@@ -125,16 +250,15 @@
 import { ElNotification } from "element-plus";
 import { Switch } from "@element-plus/icons-vue";
 import type { loginInfo, registerInfo } from "~/types/login/loginType";
+const { isMobile } = useDevice();
+// 正则定义（补充缺失的正则）
 
 const originalWarn = console.warn;
 const originalLog = console.log;
-// 重写 console.warn，过滤 async-validator 相关警告
 console.warn = function (...args) {
   if (args.some((arg) => arg?.includes?.("async-validator"))) return;
   originalWarn.apply(console, args);
 };
-
-// 重写 console.log，过滤 async-validator 相关日志（部分版本会用 log 输出）
 console.log = function (...args) {
   if (args.some((arg) => arg?.includes?.("async-validator"))) return;
   originalLog.apply(console, args);
@@ -158,11 +282,9 @@ const registerInfo = shallowReactive<registerInfo>({
   verificationCode: "",
 });
 
-// 登录表单校验规则
 const loginRules = ref({
   username: [
     { required: true, message: "请输入手机号/邮箱", trigger: "blur" },
-    // 【修改6：替换为手机号/邮箱的正则和提示】
     {
       pattern: phoneOrEmailReg,
       message: "请输入有效的手机号或邮箱",
@@ -182,7 +304,6 @@ const loginRules = ref({
 const registerRules = ref({
   username: [
     { required: true, message: "请输入手机号/邮箱", trigger: "blur" },
-    // 【修改7：替换为手机号/邮箱的正则和提示】
     {
       pattern: phoneOrEmailReg,
       message: "请输入有效的手机号或邮箱",
@@ -192,16 +313,13 @@ const registerRules = ref({
   password: [
     { required: true, message: "请输入密码", trigger: "blur" },
     {
-      pattern: /^(?=.*[a-zA-Z])(?=.*\d).{6,18}$/,
+      pattern: passwordReg,
       message: "密码需为6-18位，且包含字母和数字",
       trigger: "blur",
     },
   ],
-  // verificationCode: [
-  //   { required: true, message: "请输入验证码", trigger: "blur" },
-  //   { validator: validateConfirmPassword, trigger: "blur" },
-  // ],
 });
+
 const isDisable = ref(false);
 const isRemember = ref<boolean>(false);
 const isLogin = ref<boolean>(true);
@@ -226,9 +344,10 @@ const splitPoem = computed(() => {
     .filter((line) => line);
 });
 
+// PC端mask切换逻辑
 const switchMask = () => {
   isLogin.value = !isLogin.value;
-  if (mask.value) {
+  if (mask.value && !isMobile) {
     mask.value.classList.remove("mask-register", "mask-login");
     mask.value?.classList.add(!isLogin.value ? "mask-register" : "mask-login");
   }
@@ -237,6 +356,11 @@ const switchMask = () => {
     isDisable.value = false;
     clearTimeout(timer);
   }, 2000);
+};
+
+// 移动端表单切换逻辑（简化，无动画）
+const switchMobileForm = () => {
+  isLogin.value = !isLogin.value;
 };
 
 const loginHandler = () => {
@@ -249,18 +373,41 @@ const loginHandler = () => {
 const registerHandler = () => {
   registerFormRef.value.validate((valid: boolean) => {
     if (valid) {
-      // 校验通过，执行登录逻辑
+      // 校验通过，执行注册逻辑
     }
   });
 };
 
-//获取验证码逻辑
+// 验证码倒计时逻辑（补充缺失的方法）
+const verificationCodeCountDown = () => {
+  const isGetVerificationCode = ref(false);
+  const lastSeconds = ref(60);
+  let timer: NodeJS.Timeout | null = null;
+
+  const startCountdown = () => {
+    isGetVerificationCode.value = true;
+    lastSeconds.value = 60;
+    timer = setInterval(() => {
+      lastSeconds.value--;
+      if (lastSeconds.value <= 0) {
+        clearInterval(timer!);
+        isGetVerificationCode.value = false;
+      }
+    }, 1000);
+  };
+
+  onUnmounted(() => {
+    if (timer) clearInterval(timer);
+  });
+
+  return { isGetVerificationCode, lastSeconds, startCountdown };
+};
+
 const { startCountdown, isGetVerificationCode, lastSeconds } =
   verificationCodeCountDown();
 const verificationCodeText = "秒后重新获取";
 const getVerificationCode = () => {
   if (!phoneOrEmailReg.test(registerInfo.username)) {
-    //账户校验不通过
     ElNotification({
       title: "无法获取验证码",
       message: "请填写正确的账户",
@@ -268,7 +415,6 @@ const getVerificationCode = () => {
     });
     return;
   }
-  //先后端请求，返回成功后执行下面代码
   ElNotification({
     title: "验证码已发送",
     message: "请注意查收",
@@ -285,7 +431,7 @@ const QQLogin = () => {
 </script>
 
 <style scoped lang="scss">
-/* 样式部分完全未修改，保持原样 */
+// 原有PC端样式（保留，仅加命名空间）
 @keyframes maskAnimationRegister {
   0% {
     width: 50%;
@@ -353,7 +499,8 @@ const QQLogin = () => {
   box-shadow: $box-shadow;
   position: relative;
 
-  .mask {
+  // PC端mask样式
+  .pc-mask {
     position: absolute;
     top: 0;
     left: 0;
@@ -404,21 +551,31 @@ const QQLogin = () => {
     }
   }
 
-  .login {
+  // PC端表单通用样式
+  .pc-form {
     height: 100%;
     padding: 5vh 30px;
     width: 50%;
     position: absolute;
-    left: 50%;
     overflow: hidden;
 
-    .login-title {
+    &.login {
+      left: 50%;
+    }
+
+    &.register {
+      left: 0;
+    }
+
+    .login-title,
+    .register-title {
       text-align: center;
       font-size: 5vh;
       margin-bottom: 2vh;
     }
 
-    .login-input {
+    .login-input,
+    .register-input {
       width: 100%;
       height: 40px;
       margin-bottom: 1vh;
@@ -437,13 +594,15 @@ const QQLogin = () => {
       }
     }
 
-    .login-btn {
+    .login-btn,
+    .register-btn {
       width: 100%;
       margin-top: 1.5vh;
       height: 2.5em;
       border-radius: $radius-mid;
       font-size: 18px;
     }
+
     .other-way {
       display: flex;
       justify-content: space-around;
@@ -454,30 +613,123 @@ const QQLogin = () => {
       }
     }
   }
-  .register {
-    padding: 6vh 30px;
-    width: 50%;
-    position: absolute;
-    overflow: hidden;
+}
 
-    .register-title {
-      text-align: center;
-      font-size: 5vh;
-      margin-bottom: 2vh;
+// 移动端布局样式（核心适配）
+
+.mobile-container {
+  width: 95% !important;
+  height: auto !important;
+  max-height: 90vh !important; // 限制最大高度，避免小屏溢出
+  position: absolute !important; // 绝对定位是translate居中的基础
+  top: 50% !important; // 容器顶部对齐屏幕垂直中点
+  left: 0 !important;
+  right: 0 !important;
+  margin: 0 auto !important; // 水平居中
+  transform: translateY(-50%) !important; // 向上偏移自身50%高度，实现垂直居中
+  padding: 10px !important;
+  flex-direction: column !important;
+  overflow-y: auto; // 小屏时内部滚动，不溢出
+}
+
+// 移动端mask（顶部提示区）
+.mobile-mask {
+  width: 100%;
+  background-color: #0088dd;
+  border-radius: $radius-lg $radius-lg 0 0;
+  padding: 20px 15px;
+  text-align: center;
+
+  .mobile-mask-title {
+    font-family: "maskTitle";
+    font-size: 1.5em;
+    color: #fff;
+    margin-bottom: 10px;
+  }
+
+  .mobile-poem-line {
+    display: block;
+    margin-bottom: 5px;
+  }
+
+  .mobile-mask-desc {
+    font-size: 14px;
+    color: #f5f5f5;
+    margin-bottom: 15px;
+  }
+
+  .mobile-mask-btn {
+    border-radius: $radius-mid;
+    padding: 6px 20px;
+  }
+}
+
+// 移动端表单容器
+.mobile-form-wrap {
+  width: 100%;
+  padding: 20px 15px;
+  background-color: #fff;
+  border-radius: 0 0 $radius-lg $radius-lg;
+}
+
+// 移动端表单样式
+.mobile-form {
+  width: 100% !important;
+  height: auto !important;
+  position: static !important;
+  padding: 0 !important;
+  margin: 0 !important;
+
+  .login-title,
+  .register-title {
+    font-size: 24px !important;
+    margin-bottom: 20px !important;
+    color: #333;
+  }
+
+  .login-input,
+  .register-input {
+    height: 44px !important;
+    margin-bottom: 15px !important;
+    border-radius: $radius-mid;
+    border: 1px solid #e5e7eb;
+  }
+
+  .login-text {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    margin: 10px 0 20px !important;
+    font-size: 13px !important;
+
+    a {
+      color: #409eff;
+      text-decoration: none;
     }
+  }
 
-    .register-input {
-      width: 100%;
-      height: 40px;
-    }
+  .login-btn,
+  .register-btn {
+    width: 100%;
+    height: 44px !important;
+    font-size: 16px !important;
+    border-radius: $radius-mid !important;
+  }
 
-    .register-btn {
-      width: 100%;
-      margin: 1.5vh 0;
-      height: 2.5em;
-      border-radius: $radius-mid;
-      font-size: 18px;
+  .other-way {
+    display: flex;
+    justify-content: space-around;
+    margin-top: 20px !important;
+    img {
+      height: 40px !important;
     }
   }
 }
+
+// 兜底：小屏PC适配
+// @media (max-width: 1024px) and (min-width: 768px) {
+//   .login-container {
+//     width: 80vw !important;
+//   }
+// }
 </style>

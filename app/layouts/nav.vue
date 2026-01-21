@@ -1,6 +1,11 @@
 <template>
-  <div class="nav-container">
-    <el-menu :default-active="activeIndex" class="menu">
+  <div class="nav-container" :class="$device.isMobile ? 'nav-mobile' : ''">
+    <el-menu
+      :default-active="activeIndex"
+      class="menu"
+      :class="$device.isMobile?'menu-mobile':''"
+      :mode="$device.isMobile ? 'horizontal' : 'vertical'"
+    >
       <NuxtLink to="/chat/conversation">
         <el-menu-item index="1" class="menu-item">
           <el-icon><ChatLineSquare /></el-icon>
@@ -40,7 +45,7 @@
         </el-menu-item>
       </NuxtLink>
     </el-menu>
-    <main class="main"><slot /></main>
+    <main class="main" :class="$device.isMobile?'main-mobile':''"><slot /></main>
   </div>
 </template>
 
@@ -79,8 +84,12 @@ const activeIndex = computed(() => {
   display: flex;
   overflow: hidden;
   .menu {
-    padding: 5px;
+    // padding: 5px;
     height: 100vh;
+  }
+  .menu-mobile{
+    height:auto;
+    
   }
   .main {
     padding: 20px;
@@ -88,5 +97,11 @@ const activeIndex = computed(() => {
     overflow-y: auto;
     height: 100vh;
   }
+  .main-mobile{
+    height:calc(100vh - 59px);
+  }
+}
+.nav-mobile {
+  display: block;
 }
 </style>

@@ -1,7 +1,7 @@
 <template>
   <div class="conversation-container">
     <conversationList @startNewConversation="startNewConversation" />
-    <main class="main">
+    <main class="main" :class="$device.isMobile?'main-mobile':''">
       <NuxtPage></NuxtPage>
     </main>
   </div>
@@ -35,6 +35,12 @@ provide("openOldConversation", openOldConversation);
   .main {
     flex: 1;
     padding: 10px;
+  }
+  .main-mobile{
+    position: fixed;
+    width: calc(100% - 40px);
+    left:20px;
+
   }
 }
 </style>

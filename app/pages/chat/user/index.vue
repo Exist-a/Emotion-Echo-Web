@@ -227,12 +227,11 @@ onMounted(() => {
     box-sizing: border-box;
   }
 
-  // -------------------------- 响应式核心：user-info-card --------------------------
   .user-info-card {
     display: flex;
     flex-direction: column; // 小屏默认纵向排列
     align-items: center; // 小屏内容居中
-    padding: 20px 16px; // 小屏减少内边距
+    padding: 24px 16px; // 小屏减少内边距
     gap: 20px; // 纵向间距，避免元素挤在一起
 
     // 大屏断点（≥768px）：横向排列

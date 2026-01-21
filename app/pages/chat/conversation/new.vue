@@ -14,7 +14,7 @@
 .new-conversation {
   .title {
     text-align: center;
-    font-size: 40px;
+    font-size: clamp(18px,4vw,40px);
     margin: 15vh 0;
     font-weight: 400;
   }

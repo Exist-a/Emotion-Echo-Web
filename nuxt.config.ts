@@ -1,6 +1,13 @@
 // nuxt.config.ts
 export default defineNuxtConfig({
+  router: {
+    options: {
+      // hashMode: true,
+    },
+  },
+  ssr: false,
   app: {
+    baseURL: "/Emotion-Echo-Web/",
     head: {
       // 在这里添加 link 标签
       link: [
@@ -19,7 +26,7 @@ export default defineNuxtConfig({
     },
   },
   compatibilityDate: "2025-07-15",
-  modules: ["@element-plus/nuxt", "@pinia/nuxt", "nuxt-echarts"],
+  modules: ["@element-plus/nuxt", "@pinia/nuxt", "nuxt-echarts", "@nuxtjs/device"],
   devtools: { enabled: true },
   css: ["~/assets/scss/global.scss"],
   elementPlus: {

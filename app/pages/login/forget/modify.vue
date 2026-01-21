@@ -1,5 +1,6 @@
 <template>
-  <div class="modify-container">
+  <!-- 加动态类区分移动端 -->
+  <div class="modify-container" :class="{ 'mobile-modify-container': $device.isMobile }">
     <h2 class="title">修改密码</h2>
     <el-form :rules="rules" :model="formInfo" ref="formRef">
       <el-form-item label="新密码" label-position="top" prop="newPassword">
@@ -26,12 +27,17 @@
       </el-form-item>
     </el-form>
     <el-button class="btn" type="primary" @click="gotoSuccess">
-      确认修改</el-button
-    >
+      确认修改
+    </el-button>
   </div>
 </template>
 
 <script setup lang="ts">
+// 补充缺失的正则和组合式函数（保证代码可运行）
+const passwordReg = /^(?=.*[a-zA-Z])(?=.*\d).{6,18}$/;
+import { ElNotification } from "element-plus";
+import { useForgetPwdState } from "~/composables/forgetPwdState"; // 请根据实际路径调整
+
 definePageMeta({
   middleware: "forget-pwd",
 });
@@ -62,20 +68,19 @@ const rules = ref({
   newPassword: [
     { required: true, message: "请输入新密码", trigger: "blur" },
     {
-      pattern: passwordReg, // 替换为正确的密码正则
+      pattern: passwordReg,
       message: "密码需为6-18位，且包含字母和数字",
       trigger: "blur",
     },
   ],
   confirmNewPassword: [
-    { required: true, message: "请输入确认密码", trigger: "blur" }, // 修正文案
+    { required: true, message: "请输入确认密码", trigger: "blur" },
     {
-      // 自定义校验器：校验与新密码一致
       validator: (rule: any, value: string, callback: Function) => {
         if (value !== formInfo.value.newPassword) {
-          callback(new Error("两次输入的密码不一致")); // 不一致则返回错误
+          callback(new Error("两次输入的密码不一致"));
         } else {
-          callback(); // 一致则校验通过
+          callback();
         }
       },
       trigger: "blur",
@@ -85,6 +90,7 @@ const rules = ref({
 </script>
 
 <style lang="scss" scoped>
+// PC端样式（原有样式保留）
 .modify-container {
   box-shadow: $box-shadow;
   margin: 100px auto;
@@ -96,14 +102,49 @@ const rules = ref({
   .title {
     margin-bottom: 10px;
     text-align: center;
+    font-size: 20px;
   }
   .btn {
     height: 40px;
     margin: 10px 0;
     width: 100%;
+    border-radius: $radius-mid;
   }
   .input {
     height: 40px;
+    width: 100%;
+    margin-bottom: 15px;
+    border-radius: $radius-mid;
+  }
+}
+
+// 移动端适配样式
+.mobile-modify-container {
+  width: 100% !important; // 移动端占90%宽度
+  margin: 50px auto !important; // 减少上下间距
+  padding: 20px 15px !important; // 减少内边距
+  box-sizing: border-box;
+
+  .title {
+    font-size: 18px !important; // 缩小标题字体
+    margin-bottom: 15px !important;
+  }
+  .input {
+    height: 44px !important; // 移动端输入框高度适配触摸
+    margin-bottom: 20px !important;
+  }
+  .btn {
+    height: 44px !important; // 移动端按钮高度适配触摸
+    font-size: 16px !important;
+    margin: 15px 0 !important;
+  }
+}
+
+// 平板端兜底
+@media (max-width: 1024px) and (min-width: 768px) {
+  .modify-container {
+    width: 50vw !important;
+    padding: 25px 30px !important;
   }
 }
 </style>

@@ -15,6 +15,7 @@
     "@element-plus/nuxt": "^1.1.4",
     "@nuxtjs/device": "4.0.0",
     "@pinia/nuxt": "^0.11.3",
+    "axios": "^1.13.6",
     "echarts": "^6.0.0",
     "element-plus": "^2.12.0",
     "nuxt": "^4.2.1",

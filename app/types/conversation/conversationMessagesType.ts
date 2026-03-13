@@ -7,3 +7,8 @@ export interface conversationMessageType {
   content: string | null;
   contentType: "text" | "audio" | "img";
 }
+
+//数据库存储所需
+export interface StoredMessage extends conversationMessageType {
+  sessionId: string;        // 所属会话ID
+}

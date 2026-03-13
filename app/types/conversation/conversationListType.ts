@@ -1,5 +1,5 @@
 export type conversationListItemDataType = {
-  id: number;
+  id: string;
   title: string;
   dataTime: Date;
   isTop: boolean;

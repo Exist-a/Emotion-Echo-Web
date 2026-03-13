@@ -6,19 +6,21 @@ import type {
   conversationListItemType,
   conversationListLabelType,
 } from "~/types/conversation/conversationListType";
-import type { conversationMessagesType } from "~/types/conversation/conversationMessagesType";
+// 引入缓存删除方法，实现联动
+import { clearSessionMessages } from "~/utils/messageCache";
 
 // 存储历史对话id，当前对话信息
 export const useConversationStore = defineStore("conversation", () => {
+  // 核心修改：ID类型统一为string
   const historyList = ref<conversationListItemDataType[] | null>([
-    { id: 1, title: "会话1", dataTime: new Date(), isTop: false },
+    { id: "1", title: "会话1", dataTime: new Date(), isTop: false },
     {
-      id: 2,
+      id: "2",
       title: "会话2这是一个很长的标题",
       dataTime: new Date(),
       isTop: true,
     },
-    { id: 3, title: "会话3", dataTime: new Date(), isTop: false },
+    { id: "3", title: "会话3", dataTime: new Date(), isTop: false },
   ]);
   const labelHistoryList = ref<conversationListItemType[] | null>(null);
 
@@ -114,7 +116,7 @@ export const useConversationStore = defineStore("conversation", () => {
   // 会话记录置顶
   const handleConversationTop = (
     label: conversationListLabelType,
-    id: number
+    id: string // 修改：ID类型为string
   ): returnMsgType => {
     // 1. 校验基础数据存在性
     if (!labelHistoryList.value) {
@@ -249,7 +251,7 @@ export const useConversationStore = defineStore("conversation", () => {
   const handleEditTitle = (
     newTitle: string,
     label: conversationListLabelType,
-    id: number
+    id: string // 修改：ID类型为string
   ): returnMsgType => {
     // 1. 基础数据校验：校验标题非空、列表存在性
     const trimmedTitle = newTitle.trim();
@@ -308,10 +310,10 @@ export const useConversationStore = defineStore("conversation", () => {
     return { isOk: true, msg: "修改成功" };
   };
 
-  const handleDelConversation = (
-    id: number,
+  const handleDelConversation = async ( // 修改：改为async，联动缓存删除
+    id: string, // 修改：ID类型为string
     label: conversationListLabelType
-  ): returnMsgType => {
+  ): Promise<returnMsgType> => { // 修改：返回Promise
     if (!labelHistoryList.value) {
       ElNotification({
         type: "error",
@@ -343,6 +345,14 @@ export const useConversationStore = defineStore("conversation", () => {
       return { isOk: false, msg: "对象不存在" };
     }
 
+    // 核心修改：联动删除本地缓存的该会话消息
+    try {
+      await clearSessionMessages(id);
+    } catch (e) {
+      // 异常暂时不处理，仅兜底
+      console.warn("删除会话缓存失败", e);
+    }
+
     // 删除目标项
     targetGroup.data.splice(targetIndex, 1);
 
@@ -365,49 +375,11 @@ export const useConversationStore = defineStore("conversation", () => {
     return { isOk: true, msg: "删除成功" };
   };
 
-  //根据会话id请求对话内容
-  const getConversationById = (id: number) => {
-    //调用后端接口
-
-    //这里先用模拟数据
-    const data: conversationMessagesType = [
-      {
-        id: 1,
-        sender: "user",
-        sendTime: Date.now(),
-        content: "hello",
-        contentType: "text",
-      },
-      {
-        id: 2,
-        sender: "AI",
-        sendTime: Date.now(),
-        content: "你好啊，我是琛，是你的专属心理顾问",
-        contentType: "text",
-      },
-      {
-        id: 3,
-        sender: "user",
-        sendTime: Date.now(),
-        content: "你能做什么？",
-        contentType: "text",
-      },
-      {
-        id: 4,
-        sender: "AI",
-        sendTime: Date.now(),
-        content: "我可以陪你打三角洲，打MC，给你吃脆脆升，喝蜜雪冰城",
-        contentType: "text",
-      },
-    ];
-    return data;
-  };
   return {
     getHistoryList,
     getLabelHistoryList,
     handleConversationTop,
     handleEditTitle,
     handleDelConversation,
-    getConversationById
   };
 });

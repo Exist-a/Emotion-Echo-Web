@@ -1,0 +1,76 @@
+// styles/base.scss
+* {
+  margin: 0;
+  padding: 0;
+  box-sizing: border-box;
+  -webkit-tap-highlight-color: transparent; // 小程序保留，移除点击高亮
+}
+
+html,
+body {
+  height: 100%;
+  font-family: -apple-system, BlinkMacSystemFont, "PingFang SC",
+    "Microsoft YaHei", sans-serif;
+  font-size: 28rpx; // 小程序改用rpx（16px ≈ 28rpx，750rpx=屏幕宽度）
+  font-weight: 400;
+  color: #1e293b;
+  background-color: #f3f4f6;
+  overflow-x: hidden;
+  // 小程序安全区域适配（替换env，用uni-app内置类更兼容）
+  padding-top: var(--status-bar-height); // 小程序状态栏高度
+}
+
+// 图片自适应
+img {
+  max-width: 100%;
+  height: auto;
+  vertical-align: middle;
+}
+
+// 列表重置
+ul,
+ol {
+  list-style: none;
+}
+
+// 链接重置（小程序无a标签，改为view模拟）
+.link {
+  text-decoration: none;
+  color: inherit;
+  touch-action: manipulation;
+  &:hover {
+    color: #3b82f6;
+    transition: color 200ms ease;
+  }
+}
+
+// 表单元素重置（适配小程序原生组件）
+button,
+textarea,
+input,
+select {
+  font-family: inherit;
+  font-size: inherit;
+  border: none;
+  outline: none;
+  background: transparent;
+  -webkit-appearance: none;
+  appearance: none;
+}
+
+button {
+  cursor: pointer;
+  &:disabled {
+    cursor: not-allowed;
+    opacity: 0.6;
+    pointer-events: none;
+  }
+}
+
+// 自定义字体
+@font-face {
+  font-family: "maskTitle";
+  src: url("@/static/fonts/LuoGuoChengMaoBiXiaoXingJianTi-2.ttf") format("truetype");
+  font-weight: 400;
+  font-style: normal;
+}

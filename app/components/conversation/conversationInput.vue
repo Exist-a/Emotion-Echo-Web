@@ -9,24 +9,11 @@
     ></textarea>
     <div class="actions">
       <div class="left">
-        <el-button 
-          :icon="Paperclip" 
-          circle 
-          size="small"
-          class="action-btn"
-        />
+        <el-button :icon="Paperclip" circle size="small" class="action-btn" />
       </div>
       <div class="right">
-        <el-button 
-          :icon="Microphone" 
-          size="small"
-          class="action-btn voice-btn"
-        />
-        <el-divider
-          direction="vertical"
-          border-style="dashed"
-          class="vertical-divider"
-        />
+        <el-button :icon="Microphone" size="small" class="action-btn voice-btn" />
+        <el-divider direction="vertical" border-style="dashed" class="vertical-divider" />
         <el-button
           circle
           :icon="Promotion"
@@ -42,39 +29,61 @@
 </template>
 
 <script setup lang="ts">
-import { Promotion, Microphone, Paperclip } from "@element-plus/icons-vue";
-const userStore = useUserStore();
-const userConfig = ref(userStore.getUserConfig());
-const message = ref("");
-const route = useRoute();
-const textareaRef = ref<HTMLTextAreaElement>(); // 新增：textarea引用
-
+import { Promotion, Microphone, Paperclip } from '@element-plus/icons-vue'
+import type { useAIStreamReturnInterface } from '~/types/api/chatAPIType'
+const userStore = useUserStore()
+const userConfig = ref(userStore.getUserConfig())
+const message = ref('')
+const route = useRoute()
+const textareaRef = ref<HTMLTextAreaElement>() // 新增：textarea引用
+const props = defineProps<{
+  type: 'new' | 'old'
+}>()
+const emits = defineEmits<{
+  // 发送消息（对话页使用）
+  sendMessageReturns: [message: string, config: useAIStreamReturnInterface]
+  // 开启新对话（初始页使用，无参数）
+  startNewConversation: [message: string]
+}>()
 // 新增：输入框自动调整高度（适配内容多少）
 const autoResizeTextarea = () => {
-  if (!textareaRef.value) return;
+  if (!textareaRef.value) return
   // 重置高度为最小高度，再根据内容撑开
-  textareaRef.value.style.height = "auto";
-  textareaRef.value.style.height = `${Math.min(textareaRef.value.scrollHeight, 200)}px`; // 最大高度200px
-};
+  textareaRef.value.style.height = 'auto'
+  textareaRef.value.style.height = `${Math.min(textareaRef.value.scrollHeight, 200)}px` // 最大高度200px
+}
 
 // 页面加载时初始化高度
 onMounted(() => {
-  autoResizeTextarea();
-});
+  autoResizeTextarea()
+})
+const sendMessage = async () => {
+  if (!message.value.trim()) return
+  //构建提示词
+  const promptObj = buildRCTPrompt('anxious', message.value)
+  if (props.type === 'old') {
+    //调用方法
+    console.log('onSendMessageReturns')
+    const obj: useAIStreamReturnInterface = useAIStream(promptObj)
+    //传给父组件
+    emits('sendMessageReturns', message.value, obj)
+  } else {
+    // 是新增对话
+    emits('startNewConversation', message.value)
+  }
 
-const sendMessage = () => {
-  if (!message.value.trim()) return;
+  // console.log(res)
   if (route.params.id) {
     // 代表在会话中发送信息
   } else {
     // 不会话中发送信息时，需要新建会话
   }
-  message.value = "";
+  message.value = ''
   // 发送后重置输入框高度
   nextTick(() => {
-    autoResizeTextarea();
-  });
-};
+    autoResizeTextarea()
+  })
+}
 </script>
 
 <style lang="scss" scoped>
@@ -138,7 +147,8 @@ const sendMessage = () => {
     border-top: 1px solid #f3f4f6;
     padding-top: 10px;
 
-    .left, .right {
+    .left,
+    .right {
       display: flex;
       align-items: center;
       gap: 8px;

@@ -9,8 +9,7 @@
 html,
 body {
   height: 100%;
-  font-family: -apple-system, BlinkMacSystemFont, "PingFang SC",
-    "Microsoft YaHei", sans-serif;
+  font-family: -apple-system, BlinkMacSystemFont, 'PingFang SC', 'Microsoft YaHei', sans-serif;
   font-size: 28rpx; // 小程序改用rpx（16px ≈ 28rpx，750rpx=屏幕宽度）
   font-weight: 400;
   color: #1e293b;
@@ -69,8 +68,8 @@ button {
 
 // 自定义字体
 @font-face {
-  font-family: "maskTitle";
-  src: url("@/static/fonts/LuoGuoChengMaoBiXiaoXingJianTi-2.ttf") format("truetype");
+  font-family: 'maskTitle';
+  src: url('/fonts/LuoGuoChengMaoBiXiaoXingJianTi-2.ttf') format('truetype');
   font-weight: 400;
   font-style: normal;
 }

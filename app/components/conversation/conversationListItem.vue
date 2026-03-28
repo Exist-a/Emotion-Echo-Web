@@ -72,7 +72,7 @@ const conversationStore = useConversationStore();
 const isEditName = ref<boolean>(false);
 
 // 标记当前编辑的item ID（避免所有项都显示输入框）
-const currentEditId = ref<number | null>(null);
+const currentEditId = ref<string | null>(null);
 // 临时存储输入的标题
 const tempTitle = ref("");
 // 定义自定义事件，向父组件传递修改参数
@@ -80,12 +80,12 @@ const emit = defineEmits<{
   (
     e: "update-title",
     newTitle: string,
-    id: number,
+    id: string,
     label: conversationListLabelType
   ): void;
   (
     e: "update-delConversation",
-    id: number,
+    id: string,
     label: conversationListLabelType
   ): void;
 }>();
@@ -93,7 +93,7 @@ const emit = defineEmits<{
 //置顶按钮
 const handleConversationTop = (
   label: conversationListLabelType,
-  id: number
+  id: string
 ) => {
   conversationStore.handleConversationTop(label, id);
 };
@@ -106,7 +106,7 @@ const handleEditName = (item: any) => {
 };
 
 //提交新标题
-const submitNewTitle = (id: number, label: conversationListLabelType) => {
+const submitNewTitle = (id: string, label: conversationListLabelType) => {
   if (!tempTitle.value.trim()) {
     ElNotification({
       type: "error",
@@ -124,7 +124,7 @@ const submitNewTitle = (id: number, label: conversationListLabelType) => {
 //删除逻辑
 const handleDelConversation = (
   label: conversationListLabelType,
-  id: number
+  id: string
 ) => {
   ElMessageBox.confirm("删除后将不可恢复!", "删除会话", {
     confirmButtonText: "确定",
@@ -133,10 +133,10 @@ const handleDelConversation = (
     emit("update-delConversation", id, label); // 触发事件
   });
 };
-const parentOpenOldConversation: (id: number) => void = inject(
+const parentOpenOldConversation: (id: string) => void = inject(
   "openOldConversation"
 )!;
-const openOldConversation = (e: MouseEvent, id: number) => {
+const openOldConversation = (e: MouseEvent, id: string) => {
   const targetHtml = e.target as HTMLElement;
   if (!targetHtml) {
     return;

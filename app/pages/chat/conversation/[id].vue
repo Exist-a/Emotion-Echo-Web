@@ -1,8 +1,7 @@
 <template>
-  <!-- 核心：最外层改为flex垂直布局，占满100%高度 -->
-  <div class="chat-page-container" :class="$device.isMobile?'chat-page-container-mobile':''">
+  <div class="chat-page-container" :class="$device.isMobile ? 'chat-page-container-mobile' : ''">
     <main class="main">
-      <div
+      <!-- <div
         class="dialog"
         :class="item.sender === 'user' ? 'dialog-user' : 'dialog-AI'"
         v-for="item in data"
@@ -14,34 +13,133 @@
           :style="{ fontSize: userConfig.fontSize }"
           >{{ item.content }}</span
         >
-      </div>
+      </div> -->
+      <conversationMessage
+        v-for="item in data"
+        :id="item.id"
+        :content="item.content"
+        :key="item.id"
+        :contentType="item.contentType"
+        :sender="item.sender"
+        :sendTime="item.sendTime"
+        :loading="item.loading ?? false"
+      />
     </main>
-    <!-- 输入框容器：固定在底部，宽度适配 -->
     <div class="input-wrapper">
-      <conversationInput />
+      <conversationInput @sendMessageReturns="sendMessageReturns" :type="'old'" />
     </div>
   </div>
 </template>
 
 <script setup lang="ts">
-import type { conversationMessagesType } from "~/types/conversation/conversationMessagesType";
-const userStore = useUserStore();
-const userConfig = ref(userStore.getUserConfig());
-const conversationStore = useConversationStore();
-const route = useRoute();
-const data = ref<conversationMessagesType>([]);
+import ConversationMessage from '~/components/conversation/conversationMessage.vue'
+import type { useAIStreamReturnInterface } from '~/types/api/chatAPIType'
+import type { conversationMessagesType } from '~/types/conversation/conversationMessagesType'
 
-onMounted(() => {
+const userStore = useUserStore()
+const userConfig = ref(userStore.getUserConfig())
+const conversationStore = useConversationStore()
+const messageStore = useMessageStore()
+const route = useRoute()
+const router = useRouter()
+const data = ref<conversationMessagesType>([])
+let messageConfig: useAIStreamReturnInterface | null
+
+onMounted(async () => {
+  // 无对话ID直接报错
   if (!route.params.id) {
-    ElNotification({
-      type: "error",
-      message: "获取会话错误",
-    });
-    return;
+    ElNotification({ type: 'error', message: '获取会话错误' })
+    return
   }
-  const id = route.params.id as string;
-  data.value = conversationStore.getConversationById(+id);
-});
+
+  const initMessage = route.query.initMessage as string
+  if (initMessage?.trim()) {
+    try {
+      const prompt = buildRCTPrompt('anxious', initMessage)
+
+      const streamConfig = useAIStream(prompt)
+
+      await sendMessageReturns(initMessage, streamConfig)
+
+      await router.replace({ path: route.path, query: {} })
+    } catch (err) {
+      ElNotification({ type: 'error', message: '自动发送消息失败' })
+      console.error('初次发送异常：', err)
+    }
+  }
+
+  const id = route.params.id as string
+  // data.value = await messageStore.getConversationById(id)
+})
+
+const sendMessageReturns = async (sendMessage: string, config: useAIStreamReturnInterface) => {
+  try {
+    // 推送用户消息
+    data.value.push({
+      id: Date.now().toString(),
+      content: sendMessage,
+      sender: 'user',
+      contentType: 'text',
+      sendTime: Date.now()
+    })
+
+    messageConfig = config
+
+    // 推送AI流式消息
+    data.value.push({
+      id: (Date.now() + 1).toString(),
+      content: config.context,
+      sender: 'AI',
+      contentType: 'text',
+      sendTime: Date.now(),
+      loading: config.loading // 绑定响应式loading
+    })
+
+    // 模拟大模型流式回复
+    const tokens = [
+      '你好',
+      '！',
+      '我是',
+      '智能助手',
+      '，',
+      '非常',
+      '高兴',
+      '为你',
+      '服务',
+      ' 😊',
+      ' ',
+      '请问',
+      '你',
+      '有什么',
+      '想',
+      '了解',
+      '的',
+      '呢',
+      '？'
+    ]
+
+    let count = 0
+    const totalTokens = tokens.length
+    const timer = setInterval(() => {
+      config.loading.value = false
+      // 逐字追加
+      config.context.value += tokens[count]
+      count++
+
+      // 🔥 修复：仅在全部输出完成后关闭loading
+      if (count >= totalTokens) {
+        clearInterval(timer)
+      }
+    }, 40)
+  } catch (error) {
+    ElNotification({
+      type: 'error',
+      message: '消息发送失败：' + (error as Error).message
+    })
+    console.error('流式请求异常：', error)
+    config.loading.value = false
+  }
+}
 </script>
 
 <style scoped lang="scss">
@@ -55,9 +153,8 @@ onMounted(() => {
   padding: 0 10px;
   box-sizing: border-box;
 }
-.chat-page-container-mobile{
+.chat-page-container-mobile {
   height: calc(100vh - 25px - 65px); // 用vh替代100%，确保占满视口高度
-
 }
 .main {
   flex: 1; // 核心：自动占满输入框以外的剩余高度

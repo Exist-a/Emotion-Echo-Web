@@ -10,21 +10,13 @@
         <p class="id">ID:{{ id }}</p>
       </div>
       <div class="btn-group">
-        <el-button type="primary" class="btn" @click="editInfo"
-          >修改信息</el-button
-        >
+        <el-button type="primary" class="btn" @click="editInfo">修改信息</el-button>
         <br />
-        <el-button
-          type="danger"
-          class="btn"
-          @click="loginoutDialogVisible = true"
+        <el-button type="danger" class="btn" @click="loginoutDialogVisible = true"
           >退出登录</el-button
         >
         <br />
-        <el-button
-          type="success"
-          class="btn"
-          @click="navigateTo({ name: 'question'})"
+        <el-button type="success" class="btn" @click="navigateTo({ name: 'question' })"
           >进行心理测验</el-button
         >
       </div>
@@ -98,120 +90,120 @@
 </template>
 
 <script setup lang="ts">
-import pieChart from "~/components/charts/pieChart.vue";
-import lineChart from "~/components/charts/lineChart.vue";
-import barChart from "~/components/charts/barChart.vue";
-import type { ChartItem } from "~/types/charts/common";
-import type { UploadProps } from "element-plus";
-import { Plus } from "@element-plus/icons-vue";
-import { ref, onMounted } from "vue";
-import { ElNotification, ElMessage } from "element-plus";
+import pieChart from '~/components/charts/pieChart.vue'
+import lineChart from '~/components/charts/lineChart.vue'
+import barChart from '~/components/charts/barChart.vue'
+import type { ChartItem } from '~/types/charts/common'
+import type { UploadProps } from 'element-plus'
+import { Plus } from '@element-plus/icons-vue'
+import { ref, onMounted } from 'vue'
+import { ElNotification, ElMessage } from 'element-plus'
 
-const userStore = useUserStore();
-const nickname = userStore.getNickname();
-const avatarPath = userStore.getAvatarPath();
-const age = userStore.getAge();
-const id = userStore.getId();
-const dialogFormVisible = ref(false);
-const chartItemHeight = ref(0);
-const loginoutDialogVisible = ref(false);
-
+const userStore = useUserStore()
+const nickname = userStore.getNickname()
+const avatarPath = userStore.getAvatarPath()
+const age = userStore.getAge()
+const id = userStore.getId()
+const dialogFormVisible = ref(false)
+const chartItemHeight = ref(0)
+const loginoutDialogVisible = ref(false)
+const router = useRouter()
 const form = ref<{
-  nickname: string;
-  avatarPath: string;
-  age: number;
+  nickname: string
+  avatarPath: string
+  age: number
 }>({
   nickname: nickname.value,
   avatarPath: avatarPath.value,
-  age: age.value,
-});
+  age: age.value
+})
 
 const validateInfo = () => {
-  form.value.nickname = form.value.nickname.trim();
+  form.value.nickname = form.value.nickname.trim()
   if (!nicknameReg.test(form.value.nickname)) {
     ElNotification({
       message:
-        "昵称格式错误，长度为2-12个字符，包含中英文（含繁体）、数字（全角/半角）、下划线、横线、中文间隔号",
-      type: "warning",
-    });
-    return false;
+        '昵称格式错误，长度为2-12个字符，包含中英文（含繁体）、数字（全角/半角）、下划线、横线、中文间隔号',
+      type: 'warning'
+    })
+    return false
   }
-  form.value.age = +form.value.age;
+  form.value.age = +form.value.age
   if (form.value.age < 0 || form.value.age > 130) {
     ElNotification({
-      message: "年龄格式错误，应在0-130之间",
-      type: "warning",
-    });
-    return false;
+      message: '年龄格式错误，应在0-130之间',
+      type: 'warning'
+    })
+    return false
   }
-  return true;
-};
+  return true
+}
 
-const handleAvatarSuccess: UploadProps["onSuccess"] = (
-  response,
-  uploadFile
-) => {
-  form.value.avatarPath = URL.createObjectURL(uploadFile.raw!);
-};
+const handleAvatarSuccess: UploadProps['onSuccess'] = (response, uploadFile) => {
+  form.value.avatarPath = URL.createObjectURL(uploadFile.raw!)
+}
 
-const beforeAvatarUpload: UploadProps["beforeUpload"] = (rawFile) => {
+const beforeAvatarUpload: UploadProps['beforeUpload'] = (rawFile) => {
   if (rawFile.size / 1024 / 1024 > 2) {
-    ElMessage.error("Avatar picture size can not exceed 2MB!");
-    return false;
+    ElMessage.error('Avatar picture size can not exceed 2MB!')
+    return false
   }
-  return true;
-};
+  return true
+}
 
 const editInfo = () => {
-  dialogFormVisible.value = true;
-};
+  dialogFormVisible.value = true
+}
 
 const saveInfo = () => {
   if (validateInfo()) {
     ElNotification({
-      message: "信息修改成功！",
-      type: "success",
-    });
-    userStore.editNickname(form.value.nickname);
-    userStore.editAge(form.value.age);
-    dialogFormVisible.value = false;
+      message: '信息修改成功！',
+      type: 'success'
+    })
+    userStore.editNickname(form.value.nickname)
+    userStore.editAge(form.value.age)
+    dialogFormVisible.value = false
   }
-};
+}
 //模拟数据
 const chartData: ChartItem[] = [
   {
-    chartType: "pie",
-    title: "用户来源分布",
+    chartType: 'pie',
+    title: '情绪类型分布',
     data: [
-      { name: "微信公众号", value: 1280 },
-      { name: "抖音推广", value: 850 },
-      { name: "官网自然流量", value: 520 },
-      { name: "小红书", value: 310 },
-      { name: "其他渠道", value: 180 },
-    ],
+      { name: '焦虑情绪', value: 12 },
+      { name: '压力情绪', value: 8 },
+      { name: '低落情绪', value: 5 },
+      { name: '烦躁情绪', value: 3 },
+      { name: '平静状态', value: 2 }
+    ]
   },
   {
-    chartType: "line",
-    title: "一周活跃用户数",
-    XData: ["Mon", "Tue", "Wed", "Thu", "Fri", "Sat", "Sun"],
-    YData: [820, 932, 901, 934, 1290, 1330, 1320],
+    chartType: 'line',
+    title: '一周疏导记录次数',
+    XData: ['Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat', 'Sun'],
+    YData: [2, 3, 1, 2, 4, 3, 2]
   },
   {
-    XData: ["产品A", "产品B", "产品C", "产品D", "产品E"],
-    YData: [120, 200, 150, 80, 70],
-    chartType: "bar",
-    title: "各产品销量对比",
-  },
-];
+    XData: ['倾诉疏导', '冥想放松', '认知调节', '呼吸训练', '日记疗愈'],
+    YData: [12, 8, 6, 4, 3],
+    chartType: 'bar',
+    title: '疏导方式使用频次'
+  }
+]
 
 //确认退出登录
 const handleLogout = () => {
   //这里确认退出登录的逻辑
-  loginoutDialogVisible.value = false;
-};
+  loginoutDialogVisible.value = false
+
+  //最后登出
+  router.push('/login')
+}
 onMounted(() => {
-  chartItemHeight.value = vhToPx(40);
-});
+  chartItemHeight.value = vhToPx(40)
+})
 </script>
 
 <style scoped lang="scss">

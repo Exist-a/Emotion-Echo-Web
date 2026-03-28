@@ -3,7 +3,7 @@
     <el-menu
       :default-active="activeIndex"
       class="menu"
-      :class="$device.isMobile?'menu-mobile':''"
+      :class="$device.isMobile ? 'menu-mobile' : ''"
       :mode="$device.isMobile ? 'horizontal' : 'vertical'"
     >
       <NuxtLink to="/chat/conversation">
@@ -45,51 +45,46 @@
         </el-menu-item>
       </NuxtLink>
     </el-menu>
-    <main class="main" :class="$device.isMobile?'main-mobile':''"><slot /></main>
+    <main class="main" :class="$device.isMobile ? 'main-mobile' : ''"><slot /></main>
   </div>
 </template>
 
 <script setup lang="ts">
-import {
-  ChatLineSquare,
-  PieChart,
-  Setting,
-  User,
-} from "@element-plus/icons-vue";
-const route = useRoute();
+import { ChatLineSquare, PieChart, Setting, User } from '@element-plus/icons-vue'
+const route = useRoute()
 const activeIndex = computed(() => {
-  const currentPath = route.path; // 当前路由路径
+  const currentPath = route.path // 当前路由路径
   // 匹配规则：按路由路径映射到菜单index
-  if (currentPath.startsWith("/chat/conversation")) {
-    return "1"; // 聊天（包括其子路由）
-  } else if (currentPath === "/chat/dashboard/dailyReport") {
-    return "1-1"; // 日度分析
-  } else if (currentPath === "/chat/dashboard/weeklyReport") {
-    return "1-2"; // 周度分析
-  } else if (currentPath === "/chat/dashboard/monthlyReport") {
-    return "1-3"; // 月度分析
-  } else if (currentPath === "/chat/dashboard/annualReport") {
-    return "1-4"; // 年度分析
-  } else if (currentPath === "/chat/user") {
-    return "3"; // 我的
-  } else if (currentPath === "/chat/setting") {
-    return "4"; // 设置
+  if (currentPath.startsWith('/chat/conversation')) {
+    return '1' // 聊天（包括其子路由）
+  } else if (currentPath === '/chat/dashboard/dailyReport') {
+    return '1-1' // 日度分析
+  } else if (currentPath === '/chat/dashboard/weeklyReport') {
+    return '1-2' // 周度分析
+  } else if (currentPath === '/chat/dashboard/monthlyReport') {
+    return '1-3' // 月度分析
+  } else if (currentPath === '/chat/dashboard/annualReport') {
+    return '1-4' // 年度分析
+  } else if (currentPath === '/chat/user') {
+    return '3' // 我的
+  } else if (currentPath === '/chat/setting') {
+    return '4' // 设置
   }
-  return "1"; // 默认激活聊天
-});
+  return '1' // 默认激活聊天
+})
 </script>
 
 <style scoped lang="scss">
 .nav-container {
   display: flex;
   overflow: hidden;
+  text-decoration: none;
   .menu {
     // padding: 5px;
     height: 100vh;
   }
-  .menu-mobile{
-    height:auto;
-    
+  .menu-mobile {
+    height: auto;
   }
   .main {
     padding: 20px;
@@ -97,11 +92,14 @@ const activeIndex = computed(() => {
     overflow-y: auto;
     height: 100vh;
   }
-  .main-mobile{
-    height:calc(100vh - 59px);
+  .main-mobile {
+    height: calc(100vh - 59px);
   }
 }
 .nav-mobile {
   display: block;
+}
+:deep(.el-menu a) {
+  text-decoration: none !important;
 }
 </style>

@@ -66,13 +66,13 @@ const foldAndUnfoldMenu = () => {
 
 const handleUpdateTitle = (
   newTitle: string,
-  id: number,
+  id: string,
   label: conversationListLabelType,
 ) => {
   conversationStore.handleEditTitle(newTitle, label, id);
 };
 const handleDelConversation = (
-  id: number,
+  id: string,
   label: conversationListLabelType,
 ) => {
   conversationStore.handleDelConversation(id, label);
